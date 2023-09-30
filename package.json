@@ -21,6 +21,7 @@
     "next-auth": "^4.23.1",
     "react": "latest",
     "react-dom": "latest",
+    "react-hot-toast": "^2.4.1",
     "sweetalert2": "^11.7.31"
   },
   "devDependencies": {

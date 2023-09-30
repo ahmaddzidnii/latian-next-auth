@@ -5,7 +5,6 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import GithubProvider from "next-auth/providers/github";
-import { NextResponse } from "next/server";
 
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
@@ -49,7 +48,9 @@ export const authOptions = {
         const passwordMatch = await bcrypt.compare(credentials.password, user.hashedPassword);
 
         if (!passwordMatch) {
-          throw new Error("Password Salah");
+          const error = new Error("Password Salah");
+          error.status = 400; // Atur status ke 400 (Bad Request)
+          throw error;
         }
 
         return user;
@@ -60,7 +61,7 @@ export const authOptions = {
   session: {
     strategy: "jwt",
   },
-  debug: process.env.NODE_ENV === "development",
+  // debug: process.env.NODE_ENV === "development",
 };
 
 const handler = NextAuth(authOptions);

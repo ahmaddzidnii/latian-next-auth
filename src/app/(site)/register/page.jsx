@@ -3,7 +3,7 @@
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import Swal from "sweetalert2";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function Register() {
   const router = useRouter();
@@ -24,24 +24,19 @@ export default function Register() {
     e.preventDefault();
     try {
       await axios.post("/api/register", data);
-      Swal.fire({
-        icon: "success",
-        title: "Berhasil Mendaftar",
-        timer: 3000,
-      });
+      toast.success("Berhasil Membuat Akun");
       setTimeout(() => {
         router.push(`/login?email=${data.email}`);
-      }, 4000);
+      }, 3000);
     } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: `${error.response.data.message}`,
-      });
+      toast.error(error.response.data.message);
     }
   };
   return (
     <>
+      <div>
+        <Toaster position="top-center" reverseOrder={false} />
+      </div>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Buat Akun</h2>

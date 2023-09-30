@@ -4,7 +4,8 @@ import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function Login() {
   const emailParams = useSearchParams();
@@ -20,19 +21,34 @@ export default function Login() {
     e.preventDefault();
     const login = await signIn("credentials", { ...data, redirect: false, callbackUrl: "/dashboard" });
     console.log(login);
-    if (login.ok) {
-      router.push(login.url);
+    if (!login.error) {
+      toast.success("Berhasil login");
+    }
+
+    if (login.error === "Form Harus Diisi") {
+      toast.error(login?.error);
+    }
+    if (login.error === "User tidak ditemukan") {
+      toast.error(login?.error);
+    }
+    if (login.error === "Password Salah") {
+      toast.error(login?.error);
     }
   };
 
   const session = useSession();
-  // console.log(session);
-  if (session?.status === "authenticated") {
-    router.push("/dashboard");
-  }
+
+  useEffect(() => {
+    if (session?.status === "authenticated") {
+      router.push("/dashboard");
+    }
+  }, [session.status]);
 
   return (
     <>
+      <div>
+        <Toaster position="top-center" reverseOrder={false} />
+      </div>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img className="mx-auto h-10 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company" />

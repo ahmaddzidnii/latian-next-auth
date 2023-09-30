@@ -1,9 +1,10 @@
 "use client";
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const navigation = [
   { name: "Dashboard", href: "dashboard", current: true },
@@ -17,13 +18,13 @@ function classNames(...classes) {
 }
 
 export default function NavbarComponent() {
-  const session = useSession();
-  // console.log(session);
-  // console.log(session?.data?.user.image);
   const router = useRouter();
-  if (session.status === "unauthenticated") {
-    router.push("/login");
-  }
+  const session = useSession();
+  useEffect(() => {
+    if (session.status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [session.status]);
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
@@ -83,6 +84,11 @@ export default function NavbarComponent() {
                     leaveTo="transform opacity-0 scale-95"
                   >
                     <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <h1 className="font-bold ml-2">Anda login sebagai:</h1>
+                      <div className="flex justify-center">
+                        <h1 className="font-bold mx-5 my-2">{session.data?.user.email}</h1>
+                      </div>
+                      <hr />
                       <Menu.Item>
                         {({ active }) => (
                           <a href="#" className={classNames(active ? "bg-gray-100" : "", "block px-4 py-2 text-sm text-gray-700")}>

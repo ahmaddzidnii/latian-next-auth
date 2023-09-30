@@ -13,26 +13,13 @@ const Dashboard = async () => {
   return (
     <div>
       <NavbarComponent />
-      {/* <pre>{JSON.stringify(session)}</pre> */}
-
-      {session ? (
-        <div>
-          {/* <img src={session?.user.image} alt="profile" className="rounded-2xl" /> */}
-          <h1>
-            Selamat datang <b className="font-bold">{session?.user.name}</b>
-          </h1>
-          <h1>
-            email anda<b className="font-bold"> {session?.user.email}</b>
-          </h1>
-          {/* <LogoutButton /> */}
-        </div>
-      ) : (
-        <div className="mt-5 ml-3">
-          <a className="w-full bg-sky-500 text-white py-2 px-4 rounded hover:bg-sky-600 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50" href="/login">
-            Login
-          </a>
-        </div>
-      )}
+      <div>
+        {/* <img src={session?.user.image} alt="profile" className="rounded-2xl" /> */}
+        <h1>
+          Selamat datang <b className="font-bold">{session?.user.name}</b>
+        </h1>
+        {/* <LogoutButton /> */}
+      </div>
     </div>
   );
 };
