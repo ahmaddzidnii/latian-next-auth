@@ -5,9 +5,17 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import GithubProvider from "next-auth/providers/github";
+import { NextResponse } from "next/server";
 
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
+  pages: {
+    signIn: "/login",
+    signOut: "/auth/signout",
+    error: "/auth/error", // Error code passed in query string as ?error=
+    verifyRequest: "/auth/verify-request", // (used for check email message)
+    newUser: "/dashboard", // New users will be directed here on first sign in (leave the property out if not of interest)
+  },
   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_ID,
@@ -24,7 +32,6 @@ export const authOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        console.log(credentials);
         // cek adakah field yang di inputkan?
         if (!credentials.email || !credentials.password) {
           throw new Error("Form Harus Diisi");

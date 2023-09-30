@@ -1,14 +1,16 @@
 "use client";
 
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Login() {
+  const emailParams = useSearchParams();
+  const email = emailParams.get("email");
   const [data, setData] = useState({
-    email: "",
+    email: email || "",
     password: "",
   });
 
@@ -16,14 +18,19 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    signIn("credentials", { ...data, redirect: false }).then(() => {
-      router.push("/dashboard");
-    });
+    const login = await signIn("credentials", { ...data, redirect: false, callbackUrl: "/dashboard" });
+    console.log(login);
+    if (login.ok) {
+      router.push(login.url);
+    }
   };
 
-  // const emailParams = useSearchParams();
-  // const email = emailParams.get("email");
-  // console.log(email);
+  const session = useSession();
+  // console.log(session);
+  if (session?.status === "authenticated") {
+    router.push("/dashboard");
+  }
+
   return (
     <>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -42,6 +49,7 @@ export default function Login() {
                 <input
                   id="email"
                   onChange={(e) => setData({ ...data, email: e.target.value })}
+                  value={data?.email}
                   name="email"
                   type="email"
                   required
@@ -89,6 +97,9 @@ export default function Login() {
               Daftar Sekarang.
             </Link>
           </p>
+        </div>
+        <div className="cursor-pointer flex justify-center  text-indigo-600 hover:text-indigo-500" onClick={() => signIn("google")}>
+          Login via Google
         </div>
       </div>
     </>

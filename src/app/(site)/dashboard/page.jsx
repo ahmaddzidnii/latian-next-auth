@@ -1,7 +1,7 @@
-import NavbarComponent from "../components/NavbarComponents";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]/route";
-import LogoutButton from "../components/LogoutButton";
+import NavbarComponent from "@/app/components/NavbarComponents";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import LogoutButton from "@/app/components/LogoutButton";
 
 export const metadata = {
   title: "Dashboard",
@@ -10,29 +10,25 @@ export const metadata = {
 
 const Dashboard = async () => {
   const session = await getServerSession(authOptions);
-
   return (
     <div>
-      {/* <NavbarComponent/>
-    <pre>{JSON.stringify(session)}</pre> */}
+      <NavbarComponent />
+      {/* <pre>{JSON.stringify(session)}</pre> */}
 
       {session ? (
         <div>
-          <img src={session?.user.image} alt="profile" className="rounded-2xl" />
+          {/* <img src={session?.user.image} alt="profile" className="rounded-2xl" /> */}
           <h1>
             Selamat datang <b className="font-bold">{session?.user.name}</b>
           </h1>
           <h1>
             email anda<b className="font-bold"> {session?.user.email}</b>
           </h1>
-          <LogoutButton />
+          {/* <LogoutButton /> */}
         </div>
       ) : (
         <div className="mt-5 ml-3">
-          <a
-            className="w-full bg-sky-500 text-white py-2 px-4 rounded hover:bg-sky-600 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50"
-            href="/login"
-          >
+          <a className="w-full bg-sky-500 text-white py-2 px-4 rounded hover:bg-sky-600 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50" href="/login">
             Login
           </a>
         </div>
