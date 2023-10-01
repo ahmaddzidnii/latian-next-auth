@@ -12,7 +12,7 @@ const Dashboard = async () => {
   const session = await getServerSession(authOptions);
   return (
     <div>
-      <NavbarComponent />
+      <NavbarComponent session={session} />
       <div>
         {/* <img src={session?.user.image} alt="profile" className="rounded-2xl" /> */}
         <h1>

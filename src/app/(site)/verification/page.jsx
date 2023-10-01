@@ -1,10 +1,10 @@
 "use client";
 
-import { signIn, useSession } from "next-auth/react";
+import axios from "axios";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
 export default function Login() {
@@ -12,43 +12,27 @@ export default function Login() {
   const email = emailParams.get("email");
   const [data, setData] = useState({
     email: email || "",
-    password: "",
+    verificationCode: "",
   });
 
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const login = await signIn("credentials", { ...data, redirect: false, callbackUrl: "/dashboard" });
-    console.log(login);
-    if (!login.error) {
-      toast.success("Berhasil login");
-    }
+    try {
+      // post data ke api /verification
+      await axios.post("/api/verification", data);
+      toast.success("Berhasil verifikasi email");
 
-    if (login.error === "Form Harus Diisi") {
-      toast.error(login?.error);
-    }
-    if (login.error === "User tidak ditemukan") {
-      toast.error(login?.error);
-    }
-    if (login.error === "Password Salah") {
-      toast.error(login?.error);
-    }
-    if (login.error === "Email belum diverifikasi") {
-      toast.error(login?.error);
+      // redirect ke login page
       setTimeout(() => {
-        router.push(`/verification?email=${data.email}`);
-      }, 2000);
+        router.push(`/login?email=${data.email}`);
+      }, 3000);
+    } catch (error) {
+      // handle error message
+      toast.error(error.response.data.message);
     }
   };
-
-  const session = useSession();
-
-  useEffect(() => {
-    if (session?.status === "authenticated") {
-      router.push("/dashboard");
-    }
-  }, [session.status]);
 
   return (
     <>
@@ -58,7 +42,7 @@ export default function Login() {
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img className="mx-auto h-10 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company" />
-          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Login</h2>
+          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Verifikasi Email</h2>
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
@@ -82,21 +66,21 @@ export default function Login() {
 
             <div>
               <div className="flex items-center justify-between">
-                <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
-                  Password
+                <label htmlFor="code" className="block text-sm font-medium leading-6 text-gray-900">
+                  Verification Code
                 </label>
                 <div className="text-sm">
                   <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                    Forgot password?
+                    Tidak mendapatkan code?
                   </a>
                 </div>
               </div>
               <div className="mt-2">
                 <input
-                  id="password"
-                  onChange={(e) => setData({ ...data, password: e.target.value })}
-                  name="password"
-                  type="password"
+                  id="code"
+                  onChange={(e) => setData({ ...data, verificationCode: e.target.value })}
+                  name="Code"
+                  type="number"
                   required
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
@@ -108,7 +92,7 @@ export default function Login() {
                 type="submit"
                 className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
-                Sign in
+                Verifikasi Email
               </button>
             </div>
           </form>
@@ -119,12 +103,6 @@ export default function Login() {
               Daftar Sekarang.
             </Link>
           </p>
-        </div>
-        <div className="cursor-pointer flex justify-center  text-indigo-600 hover:text-indigo-500" onClick={() => signIn("google")}>
-          Login via Google
-        </div>
-        <div className="cursor-pointer flex justify-center  text-indigo-600 hover:text-indigo-500" onClick={() => signIn("github")}>
-          Login via Github
         </div>
       </div>
     </>

@@ -14,7 +14,8 @@ model user {
   id             String    @id @default(uuid())
   name           String?
   email          String?   @unique
-  emailVerified   DateTime?
+  emailVerified   Boolean? @default(false)
+  verificationCode  String?
   image          String?
   hashedPassword String?
   createdAt      DateTime  @default(now())

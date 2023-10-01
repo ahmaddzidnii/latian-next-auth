@@ -41,6 +41,10 @@ export const authOptions = {
           },
         });
 
+        if (!user.emailVerified) {
+          throw new Error("Email belum diverifikasi");
+        }
+
         if (!user || !user?.hashedPassword) {
           throw new Error("User tidak ditemukan");
         }

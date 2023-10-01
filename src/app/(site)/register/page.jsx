@@ -26,7 +26,7 @@ export default function Register() {
       await axios.post("/api/register", data);
       toast.success("Berhasil Membuat Akun");
       setTimeout(() => {
-        router.push(`/login?email=${data.email}`);
+        router.push(`/verification?email=${data.email}`);
       }, 3000);
     } catch (error) {
       toast.error(error.response.data.message);

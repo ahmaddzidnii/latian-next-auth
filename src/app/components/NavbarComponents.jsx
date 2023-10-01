@@ -2,9 +2,8 @@
 import { Fragment, useEffect } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 
 const navigation = [
   { name: "Dashboard", href: "dashboard", current: true },
@@ -17,14 +16,14 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function NavbarComponent() {
+export default function NavbarComponent({ session }) {
   const router = useRouter();
-  const session = useSession();
   useEffect(() => {
-    if (session.status === "unauthenticated") {
+    if (!session) {
       router.push("/login");
     }
-  }, [session.status]);
+  }, [session]);
+
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
@@ -62,7 +61,7 @@ export default function NavbarComponent() {
                 <button type="button" className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                   <span className="absolute -inset-1.5" />
                   <span className="sr-only">View notifications</span>
-                  <div>{`Hi,${session?.data?.user.name}!`}</div>
+                  <div>{`Hi,${session?.user?.name}!`}</div>
                 </button>
 
                 {/* Profile dropdown */}
@@ -71,7 +70,7 @@ export default function NavbarComponent() {
                     <Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                       <span className="absolute -inset-1.5" />
                       <span className="sr-only">Open user menu</span>
-                      <img className="h-8 w-8 rounded-full" src={!session?.data?.user.image ? `https://ui-avatars.com/api/?name=${session.data?.user.name}` : `${session?.data?.user.image}`} alt="" />
+                      <img className="h-8 w-8 rounded-full" src={!session?.user?.image ? `https://ui-avatars.com/api/?name=${session?.user.name}` : `${session?.user?.image}`} alt="Profile" />
                     </Menu.Button>
                   </div>
                   <Transition
@@ -86,7 +85,7 @@ export default function NavbarComponent() {
                     <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                       <h1 className="font-bold ml-2">Anda login sebagai:</h1>
                       <div className="flex justify-center">
-                        <h1 className="font-bold mx-5 my-2">{session.data?.user.email}</h1>
+                        <h1 className="font-bold mx-5 my-2">{session?.user?.email}</h1>
                       </div>
                       <hr />
                       <Menu.Item>
