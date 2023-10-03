@@ -1,9 +1,10 @@
 "use client";
-import { Fragment, useEffect } from "react";
+import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { BiLogIn } from "react-icons/bi";
 
 const navigation = [
   { name: "Dashboard", href: "dashboard", current: true },
@@ -17,13 +18,6 @@ function classNames(...classes) {
 }
 
 export default function NavbarComponent({ session }) {
-  const router = useRouter();
-  useEffect(() => {
-    if (!session) {
-      router.push("/login");
-    }
-  }, [session]);
-
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
@@ -61,18 +55,23 @@ export default function NavbarComponent({ session }) {
                 <button type="button" className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                   <span className="absolute -inset-1.5" />
                   <span className="sr-only">View notifications</span>
-                  <div>{`Hi,${session?.user?.name}!`}</div>
+                  {session && <div>{`Hi,${session?.user?.name}!`}</div>}
                 </button>
 
-                {/* Profile dropdown */}
                 <Menu as="div" className="relative ml-3">
-                  <div>
-                    <Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                      <span className="absolute -inset-1.5" />
-                      <span className="sr-only">Open user menu</span>
-                      <img className="h-8 w-8 rounded-full" src={!session?.user?.image ? `https://ui-avatars.com/api/?name=${session?.user.name}` : `${session?.user?.image}`} alt="Profile" />
-                    </Menu.Button>
-                  </div>
+                  {session ? (
+                    <div>
+                      <Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                        <span className="absolute -inset-1.5" />
+                        <span className="sr-only">Open user menu</span>
+                        <img className="h-8 w-8 rounded-full" src={!session?.user?.image ? `https://ui-avatars.com/api/?name=${session?.user.name}` : `${session?.user?.image}`} alt="Profile" />
+                      </Menu.Button>
+                    </div>
+                  ) : (
+                    <Link href="/login" className="text-white font-medium text-xl cursor-pointer">
+                      <BiLogIn />
+                    </Link>
+                  )}
                   <Transition
                     as={Fragment}
                     enter="transition ease-out duration-100"
@@ -97,14 +96,14 @@ export default function NavbarComponent({ session }) {
                       </Menu.Item>
                       <Menu.Item>
                         {({ active }) => (
-                          <a href="#" className={classNames(active ? "bg-gray-100" : "", "block px-4 py-2 text-sm text-gray-700")}>
+                          <Link href="/user/settings/1" className={classNames(active ? "bg-gray-100" : "", "block px-4 py-2 text-sm text-gray-700")}>
                             Settings
-                          </a>
+                          </Link>
                         )}
                       </Menu.Item>
                       <Menu.Item>
                         {({ active }) => (
-                          <div onClick={() => signOut()} className={classNames(active ? "bg-gray-100" : "", "block px-4 py-2 text-sm text-gray-700")}>
+                          <div onClick={() => signOut()} className={classNames(active ? "bg-gray-100" : "", "cursor-pointer block px-4 py-2 text-sm text-gray-700")}>
                             Sign out
                           </div>
                         )}

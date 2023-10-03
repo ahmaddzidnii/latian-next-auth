@@ -1,11 +1,15 @@
 "use client";
 
+import { useChangeTitle } from "@/app/utils/changeTitle";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
 export default function Register() {
+  // ubah title
+  useChangeTitle();
+
   const router = useRouter();
   const [data, setData] = useState({
     name: "",
@@ -15,6 +19,7 @@ export default function Register() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -23,12 +28,15 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setIsLoading(true);
       await axios.post("/api/register", data);
+      setIsLoading(false);
       toast.success("Berhasil Membuat Akun");
       setTimeout(() => {
         router.push(`/verification?email=${data.email}`);
       }, 3000);
     } catch (error) {
+      setIsLoading(false);
       toast.error(error.response.data.message);
     }
   };
@@ -127,7 +135,7 @@ export default function Register() {
                 type="submit"
                 className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
-                Register
+                {isLoading ? "loading..." : "Register"}
               </button>
             </div>
           </form>

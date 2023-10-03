@@ -1,5 +1,6 @@
 "use client";
 
+import { useChangeTitle } from "@/app/utils/changeTitle";
 import axios from "axios";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -7,7 +8,10 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
-export default function Login() {
+export default function Verification() {
+  // ubah title
+  useChangeTitle();
+
   const emailParams = useSearchParams();
   const email = emailParams.get("email");
   const [data, setData] = useState({
@@ -16,6 +20,15 @@ export default function Login() {
   });
 
   const router = useRouter();
+
+  const handleSendCode = async () => {
+    try {
+      await axios.post("/api/refreshcode", { email });
+      toast.success("Berhasil verifikasi email");
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -70,9 +83,9 @@ export default function Login() {
                   Verification Code
                 </label>
                 <div className="text-sm">
-                  <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                  <div onClick={handleSendCode} className="cursor-pointer font-semibold text-indigo-600 hover:text-indigo-500">
                     Tidak mendapatkan code?
-                  </a>
+                  </div>
                 </div>
               </div>
               <div className="mt-2">

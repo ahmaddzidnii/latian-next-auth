@@ -1,5 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// Prisma schema for a live chat system with different users
 
 generator client {
   provider = "prisma-client-js"
@@ -10,38 +9,61 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model user {
-  id             String    @id @default(uuid())
-  name           String?
-  email          String?   @unique
-  emailVerified   Boolean? @default(false)
-  verificationCode  String?
-  image          String?
-  hashedPassword String?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+model User {
+  id               String    @id @default(uuid())
+  name             String?
+  email            String?   @unique
+  emailVerified    Boolean?  @default(false)
+  verificationCode String?
+  image            String?
+  hashedPassword   String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
-// Relationship with Account
+  // Relationship with Account
   accounts Account[]
+
+  // Relationship with Message
+  messagesSent    Message[] @relation("messagesSent")
+  messagesReceived Message[] @relation("messagesReceived")
 }
 
 model Account {
-  id String @id @default(uuid())
-
- // Relationship with User
-  user   user?   @relation(fields: [userId], references: [id],onDelete: Cascade)
-  userId String
-  type String
-  provider String
+  id                String   @id @default(uuid())
+  user              User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String
+  type              String
+  provider          String
   providerAccountId String
-  refresh_token String?
-  access_token String?
-  expires_at Int?
-  token_type String?
-  scope String?
-  id_token String?
-  session_state String?
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
 
-  @@unique([provider,providerAccountId])
+  @@unique([provider, providerAccountId])
+}
 
+model Chat {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  // Relationship with Message
+  messages Message[]
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  content    String
+  timestamp  DateTime @default(now())
+  sender     User     @relation("messagesSent", fields: [senderId], references: [id])
+  senderId   String
+  receiver   User     @relation("messagesReceived", fields: [receiverId], references: [id])
+  receiverId String
+  chat       Chat     @relation(fields: [chatId], references: [id])
+  chatId     String
+
+  @@index([senderId, receiverId, chatId])
 }

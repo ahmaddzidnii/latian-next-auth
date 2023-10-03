@@ -1,7 +1,6 @@
-import { getServerSession } from "next-auth";
 import NavbarComponent from "@/app/components/NavbarComponents";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import LogoutButton from "@/app/components/LogoutButton";
+import WithAuth from "@/app/middleware/withAuth";
+import { getSession } from "@/app/session/getSession";
 
 export const metadata = {
   title: "Dashboard",
@@ -9,17 +8,19 @@ export const metadata = {
 };
 
 const Dashboard = async () => {
-  const session = await getServerSession(authOptions);
+  const session = await getSession();
+
   return (
     <div>
-      <NavbarComponent session={session} />
-      <div>
-        {/* <img src={session?.user.image} alt="profile" className="rounded-2xl" /> */}
-        <h1>
-          Selamat datang <b className="font-bold">{session?.user.name}</b>
-        </h1>
-        {/* <LogoutButton /> */}
-      </div>
+      <WithAuth session={session}>
+        <NavbarComponent session={session} />
+        <div>
+          <h1>
+            Selamat datang <b className="font-bold">{session?.user.name}</b>
+          </h1>
+          {/* <LogoutButton /> */}
+        </div>
+      </WithAuth>
     </div>
   );
 };
